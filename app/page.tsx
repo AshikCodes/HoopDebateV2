@@ -10,10 +10,18 @@ type Debate = {
   option_right: string;
   votes_left: number;
   votes_right: number;
-  sort_order: number;
 };
 
 const RESULTS_PAUSE_MS = 2500;
+
+function shuffleDebates<T>(items: T[]): T[] {
+  const shuffled = [...items];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
 const PCT_ANIM_MS = 700;
 
 function useAnimatedPercent(target: number, active: boolean) {
@@ -55,9 +63,8 @@ export default function Home() {
     getSupabase()
       .from("debates")
       .select("*")
-      .order("sort_order")
       .then(({ data }) => {
-        if (data) setDebates(data as Debate[]);
+        if (data) setDebates(shuffleDebates(data as Debate[]));
       });
   }, []);
 
